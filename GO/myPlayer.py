@@ -25,16 +25,10 @@ class myPlayer(PlayerInterface):
         return "Nicolas R - Dimitri D"
 
     def capture_diff(self):
-        
         black_stones = self._board._nbBLACK
         white_stones = self._board._nbWHITE
         diff = black_stones - white_stones
-        if self._board.next_player == self:
-            player = self
-        else:
-            player = self._board.flip(self)
-        diff = black_stones - white_stones
-        if player._mycolor == Goban.Board._BLACK:
+        if self._board._nextPlayer == Goban.Board._BLACK:
             return diff
         else:
             return -1 * diff
@@ -50,20 +44,19 @@ class myPlayer(PlayerInterface):
             our_result = -1 * opponent_best_result
             if our_result > best_so_far:
                 best_so_far = our_result
-            """
-            if self._board.next_player == "white":
+            if self._board._nextPlayer == Goban.Board._WHITE:
                 if best_so_far > best_white:
                     best_white = best_so_far
                 outcome_for_black = -1 * best_so_far
                 if outcome_for_black < best_black:
                     return best_so_far
-            elif self._board.next_player == "black":
+            elif self._board._nextPlayer == Goban.Board._BLACK:
                 if best_so_far > best_black:
                     best_black = best_so_far
                 outcome_for_white = -1 * best_so_far
                 if outcome_for_white < best_white:
                     return best_so_far
-            """
+
         return best_so_far
 
     
@@ -76,7 +69,7 @@ class myPlayer(PlayerInterface):
             return "PASS"
         
         moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
-        move = alpha_beta_best_result(self,0,capture_diff)
+        move = alpha_beta_best_result(self, 2, capture_diff) 
         self._board.push(move)
 
         # New here: allows to consider internal representations of moves
