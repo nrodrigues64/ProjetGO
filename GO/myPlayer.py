@@ -22,14 +22,61 @@ class myPlayer(PlayerInterface):
         self._mycolor = None
 
     def getPlayerName(self):
-        return "Random Player"
+        return "Nicolas R - Dimitri D"
+
+    def capture_diff(self):
+        
+        black_stones = self._board._nbBLACK
+        white_stones = self._board._nbWHITE
+        diff = black_stones - white_stones
+        if self._board.next_player == self:
+            player = self
+        else:
+            player = self._board.flip(self)
+        diff = black_stones - white_stones
+        if player._mycolor == Goban.Board._BLACK:
+            return diff
+        else:
+            return -1 * diff
+    
+    def alpha_beta_best_result(self, max_depth, eval_fn):
+        if max_depth == 0:
+            return eval_fn(self)
+        best_so_far = self.best_result
+        for candidate_move in self._board.legal_moves():
+            
+            next_state = self._board.play_move(candidate_move)
+            opponent_best_result = best_result(next_state, max_depth -1, eval_fn)
+            our_result = -1 * opponent_best_result
+            if our_result > best_so_far:
+                best_so_far = our_result
+            """
+            if self._board.next_player == "white":
+                if best_so_far > best_white:
+                    best_white = best_so_far
+                outcome_for_black = -1 * best_so_far
+                if outcome_for_black < best_black:
+                    return best_so_far
+            elif self._board.next_player == "black":
+                if best_so_far > best_black:
+                    best_black = best_so_far
+                outcome_for_white = -1 * best_so_far
+                if outcome_for_white < best_white:
+                    return best_so_far
+            """
+        return best_so_far
+
+    
+
 
     def getPlayerMove(self):
+        
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
-            return "PASS" 
+            return "PASS"
+        
         moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
-        move = choice(moves) 
+        move = alpha_beta_best_result(self,0,capture_diff)
         self._board.push(move)
 
         # New here: allows to consider internal representations of moves
