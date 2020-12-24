@@ -29,35 +29,29 @@ class myPlayer(PlayerInterface):
         white_stones = self._board._nbWHITE
         diff = black_stones - white_stones
         if self._board._nextPlayer == Goban.Board._BLACK:
+            self._board.pop()
             return diff
         else:
+            self._board.pop()
             return -1 * diff
     
-    def alpha_beta_best_result(self, max_depth, eval_fn):
+    def best_result(self, max_depth, eval_fn):
         if max_depth == 0:
-            return eval_fn(self)
-        best_so_far = self.best_result
+            return eval_fn()
+        if(self._mycolor == Goban.Board._BLACK):
+            best_so_far = -1 * self._board._nbWHITE
+        else:
+            best_so_far = -1 * self._board._nbBLACK
         for candidate_move in self._board.legal_moves():
-            
-            next_state = self._board.play_move(candidate_move)
-            opponent_best_result = best_result(next_state, max_depth -1, eval_fn)
+            move = -1
+            self._board.push(candidate_move)
+            opponent_best_result = self.best_result(max_depth -1, eval_fn)
             our_result = -1 * opponent_best_result
             if our_result > best_so_far:
                 best_so_far = our_result
-            if self._board._nextPlayer == Goban.Board._WHITE:
-                if best_so_far > best_white:
-                    best_white = best_so_far
-                outcome_for_black = -1 * best_so_far
-                if outcome_for_black < best_black:
-                    return best_so_far
-            elif self._board._nextPlayer == Goban.Board._BLACK:
-                if best_so_far > best_black:
-                    best_black = best_so_far
-                outcome_for_white = -1 * best_so_far
-                if outcome_for_white < best_white:
-                    return best_so_far
-
-        return best_so_far
+                move = candidate_move
+            self._board.pop()
+        return move
 
     
 
@@ -69,9 +63,10 @@ class myPlayer(PlayerInterface):
             return "PASS"
         
         moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
-        move = alpha_beta_best_result(self, 2, capture_diff) 
+        #move = choice(moves) 
+        move = self.best_result(2, self.capture_diff)
+        print("MY MOOVE ", move)
         self._board.push(move)
-
         # New here: allows to consider internal representations of moves
         print("I am playing ", self._board.move_to_str(move))
         print("My current board :")
