@@ -22,16 +22,56 @@ class myPlayer(PlayerInterface):
         self._mycolor = None
 
     def getPlayerName(self):
-        return "Random Player"
+        return "Nicolas R - Dimitri D"
+
+    def capture_diff(self):
+        black_stones = self._board._nbBLACK
+        white_stones = self._board._nbWHITE
+        if(self._mycolor == Goban.Board._BLACK):
+            return black_stones - white_stones
+        else:
+            return white_stones - black_stones
+    
+    def best_result(self, max_depth, eval_fn):
+        """if max_depth == 0:
+            return eval_fn()"""
+        if(self._mycolor == Goban.Board._BLACK):
+            best_so_far = -1 * self._board._nbWHITE
+        else:
+            best_so_far = -1 * self._board._nbBLACK
+        move = -1
+        for candidate_move in self._board.legal_moves():
+            self._board.push(candidate_move)
+            #opponent_best_result = self.best_result(max_depth -1, eval_fn)
+            our_result = eval_fn()
+            print("noir:",self._board._nbBLACK)
+            print("blanc:",self._board._nbWHITE)
+            print("our_result:",our_result)
+            print("best_so_far:",best_so_far)
+            print("move:",move)
+            if our_result > best_so_far:
+                print("tot")
+                print("candidate_move", candidate_move)
+                best_so_far = our_result
+                move = candidate_move
+                print("move_final:",move)
+            self._board.pop()
+        return move
+
+    
+
 
     def getPlayerMove(self):
+        
         if self._board.is_game_over():
             print("Referee told me to play but the game is over!")
-            return "PASS" 
+            return "PASS"
+        
         moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
-        move = choice(moves) 
+        #move = choice(moves) 
+        move = self.best_result(2, self.capture_diff)
+        print("MY MOOVE ", move)
         self._board.push(move)
-
         # New here: allows to consider internal representations of moves
         print("I am playing ", self._board.move_to_str(move))
         print("My current board :")
