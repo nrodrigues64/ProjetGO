@@ -27,31 +27,49 @@ class myPlayer(PlayerInterface):
     def capture_diff(self):
         black_stones = self._board._nbBLACK
         white_stones = self._board._nbWHITE
+        #areas = self._board._count_areas()
         if(self._mycolor == Goban.Board._BLACK):
-            return black_stones - white_stones
+            return black_stones - white_stones #+ areas[0]
         else:
-            return white_stones - black_stones
+            return white_stones - black_stones #+ areas[1]
     
     def best_result(self, max_depth, eval_fn):
-        """if max_depth == 0:
-            return eval_fn()"""
-        if(self._mycolor == Goban.Board._BLACK):
-            best_so_far = -1 * self._board._nbWHITE
-        else:
-            best_so_far = -1 * self._board._nbBLACK
-        move = -1
+
+        #Test si partie finis ou pas
+        if self._board.is_game_over():
+            if self._board.result() == "1-0":
+                if self._mycolor == Goban.Board._WHITE:
+                    return -800
+                else:
+                    return 800
+            elif self._board.result() == "0-1":
+                if self._mycolor == Goban.Board._BLACK:
+                    return -800
+                else:
+                    return 800 
+    
+        #Si on arrive à une feuille            
+        if max_depth == 0:
+            return eval_fn()
+
+        #Calcul de la plus petite valeur possible
+        best_so_far = -800
+        
         for candidate_move in self._board.legal_moves():
+            #print("candidate_move:",candidate_move)
             self._board.push(candidate_move)
-            #opponent_best_result = self.best_result(max_depth -1, eval_fn)
-            our_result = eval_fn()
-            print("noir:",self._board._nbBLACK)
-            print("blanc:",self._board._nbWHITE)
+            
+            our_opponent_result = self.best_result(max_depth -1, eval_fn)
+            our_result = -1 * our_opponent_result
+            # print("noir:",self._board._nbBLACK)
+            # print("blanc:",self._board._nbWHITE)
             print("our_result:",our_result)
-            print("best_so_far:",best_so_far)
-            print("move:",move)
-            if our_result > best_so_far:
-                print("tot")
-                print("candidate_move", candidate_move)
+            print("sans-1",our_opponent_result)
+            # print("best_so_far:",best_so_far)
+            # print("move:",move)
+            if our_result >= best_so_far:
+                #print("tot")
+                #print("candidate_move", candidate_move)
                 best_so_far = our_result
                 move = candidate_move
                 print("move_final:",move)
