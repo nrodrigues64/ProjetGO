@@ -27,29 +27,34 @@ class myPlayer(PlayerInterface):
     def capture_diff(self):
         black_stones = self._board._nbBLACK
         white_stones = self._board._nbWHITE
-        diff = black_stones - white_stones
-        if self._board._nextPlayer == Goban.Board._BLACK:
-            self._board.pop()
-            return diff
+        if(self._mycolor == Goban.Board._BLACK):
+            return black_stones - white_stones
         else:
-            self._board.pop()
-            return -1 * diff
+            return white_stones - black_stones
     
     def best_result(self, max_depth, eval_fn):
-        if max_depth == 0:
-            return eval_fn()
+        """if max_depth == 0:
+            return eval_fn()"""
         if(self._mycolor == Goban.Board._BLACK):
             best_so_far = -1 * self._board._nbWHITE
         else:
             best_so_far = -1 * self._board._nbBLACK
+        move = -1
         for candidate_move in self._board.legal_moves():
-            move = -1
             self._board.push(candidate_move)
-            opponent_best_result = self.best_result(max_depth -1, eval_fn)
-            our_result = -1 * opponent_best_result
+            #opponent_best_result = self.best_result(max_depth -1, eval_fn)
+            our_result = eval_fn()
+            print("noir:",self._board._nbBLACK)
+            print("blanc:",self._board._nbWHITE)
+            print("our_result:",our_result)
+            print("best_so_far:",best_so_far)
+            print("move:",move)
             if our_result > best_so_far:
+                print("tot")
+                print("candidate_move", candidate_move)
                 best_so_far = our_result
                 move = candidate_move
+                print("move_final:",move)
             self._board.pop()
         return move
 
