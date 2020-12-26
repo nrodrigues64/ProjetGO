@@ -127,21 +127,21 @@ class myPlayer(PlayerInterface):
         if self._board.is_game_over():
             if self._board.result() == "1-0":
                 if self._mycolor == Goban.Board._WHITE:
-                    return -800
+                    return -800, [None]
                 else:
-                    return 800
+                    return 800, [None]
             elif self._board.result() == "0-1":
                 if self._mycolor == Goban.Board._BLACK:
-                    return -800
+                    return -800, [None]
                 else:
-                    return 800 
+                    return 800,[None]
             elif self._board.result() == "1/2-1/2":
-                return -800
+                return -800, [None]
 
         if max_depth == 0:
             tmp = self.capture_diff()
-            print("heuri = ", tmp,"\n")
-            return  [None], self.capture_diff()
+            #print("heuri = ", tmp,"\n")
+            return  self.capture_diff(), [None]
         
         moves = self._board.generate_legal_moves()
         shuffle(moves)
@@ -149,8 +149,7 @@ class myPlayer(PlayerInterface):
         for candidate_move in moves:
             self._board.push(candidate_move)
             #print("depth = ", max_depth, "-alpha = ", -alpha, "-beta = ", -beta ,"\n")
-            opponent_move , val = self.negalpha_best_result(max_depth-1, -1*beta, -1*alpha)
-            #print("VAL = ",val,"\n")
+            val , opponent_move = self.negalpha_best_result(max_depth-1, -1*beta, -1*alpha)
             val *= -1
             self._board.pop()
             if val == alpha:
@@ -159,10 +158,10 @@ class myPlayer(PlayerInterface):
                 alpha = val
                 move = [candidate_move]
                 if alpha>beta:
-                    print ("alpha = ", alpha, "\n")
-                    return move,alpha
+                    #print ("alpha = ", alpha, "\n")
+                    return alpha,move
         #print ("alpha2 = ", alpha, "\n")
-        return move,alpha
+        return alpha,move
         
 
 
@@ -175,7 +174,7 @@ class myPlayer(PlayerInterface):
         #moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
         #move = choice(moves) 
         moves = self.negalpha_best_result(2, -800, +800)
-        move = choice(moves[0]) 
+        move = choice(moves[1]) 
         #print("MY MOOVE ", move)
         self._board.push(move)
         # New here: allows to consider internal representations of moves
