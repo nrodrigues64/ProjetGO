@@ -7,6 +7,7 @@ Right now, this class contains the copy of the randomPlayer. But you have to cha
 
 import time
 import Goban 
+from random import shuffle
 from random import choice
 from playerInterface import *
 
@@ -54,8 +55,9 @@ class myPlayer(PlayerInterface):
 
         #Calcul de la plus petite valeur possible
         best_so_far = -800
-        
-        for candidate_move in self._board.legal_moves():
+        moves = self._board.legal_moves()
+        shuffle(moves)
+        for candidate_move in moves:
             #print("candidate_move:",candidate_move)
             self._board.push(candidate_move)
             
