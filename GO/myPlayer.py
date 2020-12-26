@@ -34,20 +34,20 @@ class myPlayer(PlayerInterface):
         else:
             return white_stones - black_stones #+ areas[1]
     
-    def best_result(self, max_depth, eval_fn):
+    def negamax_best_result(self, max_depth, eval_fn):
 
         #Test si partie finis ou pas
-        if self._board.is_game_over():
-            if self._board.result() == "1-0":
-                if self._mycolor == Goban.Board._WHITE:
-                    return -800
-                else:
-                    return 800
-            elif self._board.result() == "0-1":
-                if self._mycolor == Goban.Board._BLACK:
-                    return -800
-                else:
-                    return 800 
+        # if self._board.is_game_over():
+        #     if self._board.result() == "1-0":
+        #         if self._mycolor == Goban.Board._WHITE:
+        #             return -800
+        #         else:
+        #             return 800
+        #     elif self._board.result() == "0-1":
+        #         if self._mycolor == Goban.Board._BLACK:
+        #             return -800
+        #         else:
+        #             return 800 
     
         #Si on arrive à une feuille            
         if max_depth == 0:
@@ -61,24 +61,65 @@ class myPlayer(PlayerInterface):
             #print("candidate_move:",candidate_move)
             self._board.push(candidate_move)
             
-            our_opponent_result = self.best_result(max_depth -1, eval_fn)
+            our_opponent_result = self.negamax_best_result(max_depth -1, eval_fn)
             our_result = -1 * our_opponent_result
             # print("noir:",self._board._nbBLACK)
             # print("blanc:",self._board._nbWHITE)
-            print("our_result:",our_result)
-            print("sans-1",our_opponent_result)
+            # print("our_result:",our_result)
+            # print("sans-1",our_opponent_result)
             # print("best_so_far:",best_so_far)
             # print("move:",move)
             if our_result >= best_so_far:
                 #print("tot")
                 #print("candidate_move", candidate_move)
+                # print("move_final:",move)
                 best_so_far = our_result
                 move = candidate_move
-                print("move_final:",move)
+                
             self._board.pop()
         return move
 
-    
+    def negalpha_best_result(self,max_depth, alpha, beta, eval_fn):
+        #Test si partie finis ou pas
+        if self._board.is_game_over():
+            if self._board.result() == "1-0":
+                if self._mycolor == Goban.Board._WHITE:
+                    return -800
+                else:
+                    return 800
+            elif self._board.result() == "0-1":
+                if self._mycolor == Goban.Board._BLACK:
+                    return -800
+                else:
+                    return 800 
+            elif self._board.result() == "1/2-1/2":
+                return -800
+        
+        # Si on est à une feuille          
+        if max_depth == 0:
+            return eval_fn()
+
+        # Mélange des coup pour une choix moins linéaire par rapport au plateau
+        moves = self._board.legal_moves()
+        shuffle(moves)
+
+        # Pour chaque coups possibles
+        for candidate_move in moves:
+
+            self._board.push(candidate_move)
+            our_opponent_result = self.negalpha_best_result(max_depth -1, alpha, beta, eval_fn)
+            our_result = -1 * our_opponent_result
+            move = candidate_move
+            if our_result > alpha:
+                
+                alpha = our_result
+                future_beta = -1 * our_result
+                if future_beta < beta:
+                    move = candidate_move
+
+            self._board.pop()
+        return move
+
 
 
     def getPlayerMove(self):
@@ -89,7 +130,7 @@ class myPlayer(PlayerInterface):
         
         moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
         #move = choice(moves) 
-        move = self.best_result(2, self.capture_diff)
+        move = self.negalpha_best_result(2, -800, +800, self.capture_diff)
         print("MY MOOVE ", move)
         self._board.push(move)
         # New here: allows to consider internal representations of moves
