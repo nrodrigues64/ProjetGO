@@ -128,10 +128,10 @@ class myPlayer(PlayerInterface):
             print("Referee told me to play but the game is over!")
             return "PASS"
         
-        moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
+        #moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
         #move = choice(moves) 
         move = self.negalpha_best_result(2, -800, +800, self.capture_diff)
-        print("MY MOOVE ", move)
+        #print("MY MOOVE ", move)
         self._board.push(move)
         # New here: allows to consider internal representations of moves
         print("I am playing ", self._board.move_to_str(move))
