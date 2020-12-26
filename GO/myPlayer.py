@@ -157,7 +157,7 @@ class myPlayer(PlayerInterface):
             if val > alpha:
                 alpha = val
                 move = [candidate_move]
-                if alpha>beta:
+                if alpha>=beta:
                     #print ("alpha = ", alpha, "\n")
                     return alpha,move
         #print ("alpha2 = ", alpha, "\n")
@@ -173,7 +173,7 @@ class myPlayer(PlayerInterface):
         
         #moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
         #move = choice(moves) 
-        moves = self.negalpha_best_result(2, -800, +800)
+        moves = self.negalpha_best_result(3, -800, +800)
         move = choice(moves[1]) 
         #print("MY MOOVE ", move)
         self._board.push(move)
