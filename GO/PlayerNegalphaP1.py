@@ -34,93 +34,6 @@ class myPlayer(PlayerInterface):
         else:
             return -1*(white_stones - black_stones)    #+ areas[1]
     
-    def negamax_best_result(self, max_depth, eval_fn):
-
-        #Test si partie finis ou pas
-        # if self._board.is_game_over():
-        #     if self._board.result() == "1-0":
-        #         if self._mycolor == Goban.Board._WHITE:
-        #             return -800
-        #         else:
-        #             return 800
-        #     elif self._board.result() == "0-1":
-        #         if self._mycolor == Goban.Board._BLACK:
-        #             return -800
-        #         else:
-        #             return 800 
-    
-        #Si on arrive à une feuille            
-        if max_depth == 0:
-            return eval_fn()
-
-        #Calcul de la plus petite valeur possible
-        best_so_far = -800
-        moves = self._board.legal_moves()
-        shuffle(moves)
-        for candidate_move in moves:
-            #print("candidate_move:",candidate_move)
-            self._board.push(candidate_move)
-            
-            our_opponent_result = self.negamax_best_result(max_depth -1, eval_fn)
-            our_result = -1 * our_opponent_result
-            # print("noir:",self._board._nbBLACK)
-            # print("blanc:",self._board._nbWHITE)
-            # print("our_result:",our_result)
-            # print("sans-1",our_opponent_result)
-            # print("best_so_far:",best_so_far)
-            # print("move:",move)
-            if our_result >= best_so_far:
-                #print("tot")
-                #print("candidate_move", candidate_move)
-                # print("move_final:",move)
-                best_so_far = our_result
-                move = candidate_move
-                
-            self._board.pop()
-        return move
-
-    # def negalpha_best_result(self,max_depth, alpha, beta, eval_fn):
-    #     move = []
-    #     #Test si partie finis ou pas
-    #     if self._board.is_game_over():
-    #         if self._board.result() == "1-0":
-    #             if self._mycolor == Goban.Board._WHITE:
-    #                 return -800
-    #             else:
-    #                 return 800
-    #         elif self._board.result() == "0-1":
-    #             if self._mycolor == Goban.Board._BLACK:
-    #                 return -800
-    #             else:
-    #                 return 800 
-    #         elif self._board.result() == "1/2-1/2":
-    #             return -800
-        
-    #     # Si on est à une feuille          
-    #     if max_depth == 0:
-    #         return eval_fn()
-
-    #     # Mélange des coup pour une choix moins linéaire par rapport au plateau
-    #     moves = self._board.legal_moves()
-    #     shuffle(moves)
-
-    #     # Pour chaque coups possibles
-    #     for candidate_move in moves:
-
-    #         self._board.push(candidate_move)
-    #         #our_opponent_result = self.negalpha_best_result(max_depth -1, alpha, beta, eval_fn)
-    #         #our_result = -1 * our_opponent_result[1]
-    #         #our_result = 0
-    #         #move = candidate_move
-    #         if our_result > alpha:
-    #             alpha = our_result
-    #             #future_beta = -1 * our_result
-    #             #if future_beta < beta:
-    #             move = [candidate_move]
-    #         if our_result == alpha:
-    #             move.append(candidate_move)
-    #         self._board.pop()
-    #     return (move,alpha)
 
     def negalpha_best_result(self,max_depth, alpha, beta):
         move = []
@@ -162,25 +75,17 @@ class myPlayer(PlayerInterface):
         new_moves = []
         liberty = 0
         for move in moves:
-            #print("je rentre dans la liste des moves")
             self._board.push(move)
-            
             new_liberty = 0
-
             for i in range(81):
-                #tab[i] = False
                 if self._board[i]==self._mycolor:
                     j = self._board._neighborsEntries[i]
                     while(self._board._neighbors[j] != -1):
-                        #print("je regardes les voisins")
                         new_liberty += 1
                         j+=1
-                        #tab[self._board._neighbors[j]] = True
                     if liberty == new_liberty:
-                        #print("j'ajoute un move a la liste")
                         new_moves.append(move)
                     if new_liberty > liberty:
-                        #print("je change la liberté et je reset la liste")
                         liberty = new_liberty
                         new_moves = [move]
             self._board.pop()
@@ -193,19 +98,11 @@ class myPlayer(PlayerInterface):
             print("Referee told me to play but the game is over!")
             return "PASS"
         
-        #moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
-        #move = choice(moves) 
         moves = self.negalpha_best_result(1, -800, +800)
-        #print("je vais rentrer dans la fonction")
-        # for j in moves[1]:
-        #     print("{", j ,"}")
         new_moves = self.get_liberty(moves[1])
         if len(new_moves) == 0 :
             new_moves.append(-1)
-        # for i in new_moves:
-        #     print("[", i ,"]")
         move = choice(new_moves) 
-        #print("MY MOOVE ", move)
         self._board.push(move)
         # New here: allows to consider internal representations of moves
         print("I am playing ", self._board.move_to_str(move))

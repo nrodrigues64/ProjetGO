@@ -25,18 +25,18 @@ class myPlayer(PlayerInterface):
     def getPlayerName(self):
         return "Nicolas R - Dimitri D"
 
-    def capture_diff(self): #calcule pierre noire par rapport au pierre blanche
+    def capture_diff(self):
         black_stones = self._board._nbBLACK
         white_stones = self._board._nbWHITE
+        #areas = self._board._count_areas()
         if(self._mycolor == Goban.Board._BLACK):
-            return -1*(black_stones - white_stones) 
+            return black_stones - white_stones #+ areas[0]
         else:
-            return -1*(white_stones - black_stones)
+            return white_stones - black_stones #+ areas[1]
     
-   
 
-    def negalpha_best_result(self,max_depth, alpha, beta): #NegAlphaBeta
-        move = [] #liste où sont stocker les meilleurs coups
+    def negalpha_best_result(self,max_depth, alpha, beta):
+        move = []
         if self._board.is_game_over():
             if self._board.result() == "1-0":
                 if self._mycolor == Goban.Board._WHITE:
@@ -72,17 +72,13 @@ class myPlayer(PlayerInterface):
                     return alpha,move
         return alpha,move
         
-
     def get_liberty(self, moves):
-        new_moves = [] #Liste où sont calculer les nouveaux meilleurs coups
+        new_moves = []
         liberty = 0
-
         for move in moves:
             self._board.push(move)
-            
             new_liberty = 0
-
-            for i in range(81): #On calcule les libertées en parcourant la grille du jeu
+            for i in range(81):
                 if self._board[i]==self._mycolor:
                     j = self._board._neighborsEntries[i]
                     while(self._board._neighbors[j] != -1):
@@ -104,11 +100,11 @@ class myPlayer(PlayerInterface):
             print("Referee told me to play but the game is over!")
             return "PASS"
         
-        moves = self.negalpha_best_result(3, -800, +800)
+        moves = self.negalpha_best_result(2, -800, +800)
         new_moves = self.get_liberty(moves[1])
-        if len(new_moves) == 0 :#On verifie que la liste soit pas vide après l'appel de la fonction sinon on ajoute le move PASS
-            new_moves.append(-1)        
-        move = choice(new_moves) #On choisit un coup parmi les meilleurs coups
+        if len(new_moves) == 0 :
+            new_moves.append(-1)
+        move = choice(new_moves)
         self._board.push(move)
         # New here: allows to consider internal representations of moves
         print("I am playing ", self._board.move_to_str(move))
