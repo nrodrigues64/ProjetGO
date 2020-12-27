@@ -30,9 +30,9 @@ class myPlayer(PlayerInterface):
         white_stones = self._board._nbWHITE
         #areas = self._board._count_areas()
         if(self._mycolor == Goban.Board._BLACK):
-            return -1*(black_stones - white_stones)  #+ areas[0]
+            return -1*(black_stones - white_stones) #+ areas[0]
         else:
-            return -1*(white_stones - black_stones)    #+ areas[1]
+            return -1*(white_stones - black_stones) #+ areas[1]
     
     def negamax_best_result(self, max_depth, eval_fn):
 
@@ -139,12 +139,16 @@ class myPlayer(PlayerInterface):
                 return -800, [None]
 
         if max_depth == 0:
-            return  self.capture_diff(), move
+            tmp = self.capture_diff()
+            #print("heuri = ", tmp,"\n")
+            return  self.capture_diff(), [None]
         
         moves = self._board.generate_legal_moves()
         shuffle(moves)
+
         for candidate_move in moves:
             self._board.push(candidate_move)
+            #print("depth = ", max_depth, "-alpha = ", -alpha, "-beta = ", -beta ,"\n")
             val , opponent_move = self.negalpha_best_result(max_depth-1, -1*beta, -1*alpha)
             val *= -1
             self._board.pop()
@@ -154,34 +158,31 @@ class myPlayer(PlayerInterface):
                 alpha = val
                 move = [candidate_move]
                 if alpha>=beta:
+                    #print ("alpha = ", alpha, "\n")
                     return alpha,move
+        #print ("alpha2 = ", alpha, "\n")
         return alpha,move
         
 
-    def get_liberty(self, moves):
-        #print("je rentre dans la fonction")
-        new_moves = [-1]
-        liberty = 0
-        for move in moves:
-            #print("je rentre dans la liste des moves")
-            self._board.push(move)
-            new_liberty = 0
-            for i in self._board._neighborsEntries:
-                #print("je parcours les entrée des voisins")
-                j = i
-                while(self._board._neighbors[j] != -1):
-                    #print("je regardes les voisins")
-                    new_liberty += 1
-                    j+=1
-                if liberty == new_liberty:
-                    #print("j'ajoute un move a la liste")
-                    new_moves.append(move)
-                if new_liberty > liberty:
-                    #print("je change la liberté et je reset la liste")
-                    liberty = new_liberty
-                    new_moves = [move]
-            self._board.pop()
-        return new_moves
+    # def get_liberty(self, moves):
+    #     new_moves = []
+    #     liberty = 0
+    #     for move in moves:
+    #         self._board.push(move)
+    #         new_liberty = 0
+    #         for i in self._board._neighborsEntries:
+    #             j = i
+    #             while(self._board._neighbors[j] != -1):
+    #                 liberty += 1
+    #                 j+=1
+    #         self._board.pop()
+    #         if liberty == new_liberty:
+    #             new_moves.append(move)
+    #         if new_liberty > liberty:
+    #             liberty = new_liberty
+    #             new_moves = [move]
+    #     return new_moves
+
 
     def getPlayerMove(self):
         
@@ -191,10 +192,8 @@ class myPlayer(PlayerInterface):
         
         #moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
         #move = choice(moves) 
-        moves = self.negalpha_best_result(1, -800, +800)
-        #print("je vais rentrer dans la fonction")
-        new_moves = self.get_liberty(moves[1])
-        move = choice(new_moves) 
+        moves = self.negalpha_best_result(3, -800, +800)
+        move = choice(moves[1]) 
         #print("MY MOOVE ", move)
         self._board.push(move)
         # New here: allows to consider internal representations of moves
