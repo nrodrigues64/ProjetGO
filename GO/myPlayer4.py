@@ -180,7 +180,7 @@ class myPlayer(PlayerInterface):
 
             for i in range(81):
                 #tab[i] = False
-                if self._board[i]==self._board._BLACK:
+                if self._board[i]==self._mycolor:
                     j = self._board._neighborsEntries[i]
                     while(self._board._neighbors[j] != -1):
                         #print("je regardes les voisins")
