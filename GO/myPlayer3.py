@@ -159,13 +159,8 @@ class myPlayer(PlayerInterface):
         
 
     def get_liberty(self, moves):
-        #print("je rentre dans la fonction")
         new_moves = []
         liberty = 0
-        #tab = []
-
-
-
         for move in moves:
             #print("je rentre dans la liste des moves")
             self._board.push(move)
