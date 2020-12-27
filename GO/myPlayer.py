@@ -173,7 +173,16 @@ class myPlayer(PlayerInterface):
         
         #moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
         #move = choice(moves) 
-        moves = self.negalpha_best_result(3, -800, +800)
+        moves = self.negalpha_best_result(2, -800, +800)
+        (black, white) = self._board.compute_score()
+        for current_move in moves:
+            if current_move == self._board.str_to_move("PASS"):
+                if self._mycolor == self._board._BLACK:
+                    if black-white>=0:
+                        moves[1].remove(self._board.str_to_move("PASS"))
+                elif white-black >=0:
+                    if self._board._capturedWHITE <= self._board._capturedBLACK and self._board._nbWHITE <= self._board._nbBLACK: 
+                        moves[1].remove(self._board.str_to_move("PASS"))
         move = choice(moves[1]) 
         #print("MY MOOVE ", move)
         self._board.push(move)
