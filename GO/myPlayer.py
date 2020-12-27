@@ -208,6 +208,8 @@ class myPlayer(PlayerInterface):
         #move = choice(moves) 
         moves = self.negalpha_best_result(2, -800, +800)
         new_moves = self.get_liberty(moves[1])
+        if len(new_moves) == 0 :
+            new_moves.append(-1)
         move = choice(new_moves)
         #print("MY MOOVE ", move)
         self._board.push(move)

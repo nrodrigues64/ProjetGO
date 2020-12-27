@@ -205,6 +205,8 @@ class myPlayer(PlayerInterface):
         # for j in moves[1]:
         #     print("{", j ,"}")
         new_moves = self.get_liberty(moves[1])
+        if len(new_moves) == 0 :
+            new_moves.append(-1)
         # for i in new_moves:
         #     print("[", i ,"]")
         move = choice(new_moves) 
