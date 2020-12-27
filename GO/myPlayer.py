@@ -163,6 +163,39 @@ class myPlayer(PlayerInterface):
         #print ("alpha2 = ", alpha, "\n")
         return alpha,move
         
+    def get_liberty(self, moves):
+        #print("je rentre dans la fonction")
+        new_moves = []
+        liberty = 0
+        #tab = []
+
+
+
+        for move in moves:
+            #print("je rentre dans la liste des moves")
+            self._board.push(move)
+            
+            new_liberty = 0
+
+            for i in range(81):
+                #tab[i] = False
+                if self._board[i]==self._board._BLACK:
+                    j = self._board._neighborsEntries[i]
+                    while(self._board._neighbors[j] != -1):
+                        #print("je regardes les voisins")
+                        new_liberty += 1
+                        j+=1
+                        #tab[self._board._neighbors[j]] = True
+                    if liberty == new_liberty:
+                        #print("j'ajoute un move a la liste")
+                        new_moves.append(move)
+                    if new_liberty > liberty:
+                        #print("je change la liberté et je reset la liste")
+                        liberty = new_liberty
+                        new_moves = [move]
+            self._board.pop()
+        print("LIBERTY = ", liberty)
+        return new_moves
 
 
     def getPlayerMove(self):
@@ -174,16 +207,8 @@ class myPlayer(PlayerInterface):
         #moves = self._board.legal_moves() # Dont use weak_legal_moves() here!
         #move = choice(moves) 
         moves = self.negalpha_best_result(2, -800, +800)
-        # (black, white) = self._board.compute_score()
-        # for current_move in moves:
-        #     if current_move == self._board.str_to_move("PASS"):
-        #         if self._mycolor == self._board._BLACK:
-        #             if black-white>=0:
-        #                 moves[1].remove(self._board.str_to_move("PASS"))
-        #         elif white-black >=0:
-        #             if self._board._capturedWHITE <= self._board._capturedBLACK and self._board._nbWHITE <= self._board._nbBLACK: 
-        #                 moves[1].remove(self._board.str_to_move("PASS"))
-        move = choice(moves[1]) 
+        new_moves = self.get_liberty(moves[1])
+        move = choice(new_moves)
         #print("MY MOOVE ", move)
         self._board.push(move)
         # New here: allows to consider internal representations of moves

@@ -160,27 +160,36 @@ class myPlayer(PlayerInterface):
 
     def get_liberty(self, moves):
         #print("je rentre dans la fonction")
-        new_moves = [-1]
+        new_moves = []
         liberty = 0
+        #tab = []
+
+
+
         for move in moves:
             #print("je rentre dans la liste des moves")
             self._board.push(move)
+            
             new_liberty = 0
-            for i in self._board._neighborsEntries:
-                #print("je parcours les entrée des voisins")
-                j = i
-                while(self._board._neighbors[j] != -1):
-                    #print("je regardes les voisins")
-                    new_liberty += 1
-                    j+=1
-                if liberty == new_liberty:
-                    #print("j'ajoute un move a la liste")
-                    new_moves.append(move)
-                if new_liberty > liberty:
-                    #print("je change la liberté et je reset la liste")
-                    liberty = new_liberty
-                    new_moves = [move]
+
+            for i in range(81):
+                #tab[i] = False
+                if self._board[i]==self._board._BLACK:
+                    j = self._board._neighborsEntries[i]
+                    while(self._board._neighbors[j] != -1):
+                        #print("je regardes les voisins")
+                        new_liberty += 1
+                        j+=1
+                        #tab[self._board._neighbors[j]] = True
+                    if liberty == new_liberty:
+                        #print("j'ajoute un move a la liste")
+                        new_moves.append(move)
+                    if new_liberty > liberty:
+                        #print("je change la liberté et je reset la liste")
+                        liberty = new_liberty
+                        new_moves = [move]
             self._board.pop()
+        print("LIBERTY = ", liberty)
         return new_moves
 
     def getPlayerMove(self):
@@ -193,7 +202,11 @@ class myPlayer(PlayerInterface):
         #move = choice(moves) 
         moves = self.negalpha_best_result(1, -800, +800)
         #print("je vais rentrer dans la fonction")
+        # for j in moves[1]:
+        #     print("{", j ,"}")
         new_moves = self.get_liberty(moves[1])
+        # for i in new_moves:
+        #     print("[", i ,"]")
         move = choice(new_moves) 
         #print("MY MOOVE ", move)
         self._board.push(move)
